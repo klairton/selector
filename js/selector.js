@@ -18,7 +18,7 @@ angular.module('selectorApp', [])
 
     selector.parseLog = function() {
       var players = []
-      var regex = /^[\d]{2}:[\d]{2}(.+):(EK|ED|RP|MS)$/i;
+      var regex = /^[\d]{2}:[\d]{2}(.+): (EK|ED|RP|MS)$/i;
       selector.log = selector.log + "\n"
       var lines = selector.log.split("\n");
 
