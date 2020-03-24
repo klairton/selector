@@ -1,0 +1,172 @@
+<!doctype html>
+<html ng-app="selectorApp">
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="js/selector.js"></script>
+    <title>Seletor de Times</title>
+  </head>
+  <body>
+
+    <div class="container" ng-controller="SelectorController as selector">
+      <h2>Seletor de Times</h2>
+
+      <div ng-if="selector.step == 1">
+        <h3>Instruções:</h3>
+
+        <div class="row">
+          <ol>
+            <li>Limpe o local chat.</li>
+            <li>Solicite aos membros que digitem as seguintes mensagens no local chat seguindo as vocações:</li>
+            <ul>
+              <li>Knight: <b>EK</b></li>
+              <li>Druid: <b>ED</b></li>
+              <li>Paladin: <b>RP</b></li>
+              <li>Sorcerer: <b>MS</b></li>
+            </ul>
+            <li>Copie o local chat e cole na área de texto abaixo.</li>
+          </ol>
+        </div>
+
+        <form ng-submit="selector.parseLog()" class="row justify-content-center">
+          <textarea ng-model="selector.log" class="col-12" rows="10"></textarea>
+          <input class="mt-3 col-3 btn btn-outline-dark btn-lg" type="submit" value="Listar Participantes">
+        </form>
+      </div>
+
+      <div ng-if="selector.step == 2">
+        <div class="row">
+          <h4 class="col-12">Total de Participantes: {{selector.players.length}}</h4>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <h4>Knights: {{selector.countByVoc('EK')}}</h4>
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-primary" ng-repeat="player in selector.selectByVoc('EK')">
+                <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
+                <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
+                <span> ({{player.voc}}) {{player.name}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col">
+            <h4>Druids: {{selector.countByVoc('ED')}}</h4>
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-success"  ng-repeat="player in selector.selectByVoc('ED')">
+                <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
+                <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
+                <span> ({{player.voc}}) {{player.name}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col">
+            <h4>Paladins: {{selector.countByVoc('RP')}}</h4>
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-info"  ng-repeat="player in selector.selectByVoc('RP')">
+                <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
+                <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
+                <span> ({{player.voc}}) {{player.name}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col">
+            <h4>Sorcerers: {{selector.countByVoc('MS')}}</h4>
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-warning"  ng-repeat="player in selector.selectByVoc('MS')">
+                <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
+                <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
+                <span> ({{player.voc}}) {{player.name}}</span>
+              </li>
+            </ul>
+          </div>  
+        </div>
+
+        <form class="mt-5 justify-content-center">
+          <div class="form-group row">
+            <label class="col-8" for="team_size">Qual o tamanho do time?</label>
+            <input type="text" class="col-2 form-control" id="team_size" ng-model="selector.team_size">
+          </div>
+          <div class="form-group row">
+            <label class="col-8" for="min_ek">Qual a quantidade mínima de knights?</label>
+            <input type="text" class="col-2 form-control" id="min_ek" ng-model="selector.min.ek">
+          </div>
+          <div class="form-group row">
+            <label class="col-8" for="min_ed">Qual a quantidade mínima de druids?</label>
+            <input type="text" class="col-2 form-control" id="min_ed" ng-model="selector.min.ed">
+          </div>
+          <div class="form-group row">
+            <label class="col-8" for="min_rp">Qual a quantidade mínima de paladins?</label>
+            <input type="text" class="col-2 form-control" id="min_rp" ng-model="selector.min.rp">
+          </div>
+          <div class="form-group row">
+            <label class="col-8" for="min_ms">Qual a quantidade mínima de sorcerers?</label>
+            <input type="text" class="col-2 form-control" id="min_ms" ng-model="selector.min.ms">
+          </div>
+
+          <div class="form-group row">
+            <div class="col-12">Quais vocações podem ser utilizadas para completar o time?</div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="fill_ek" ng-model="selector.fill.ek">
+                <label class="form-check-label" for="fill_ek">Knights</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="fill_ed" ng-model="selector.fill.ed">
+                <label class="form-check-label" for="fill_ed">Druids</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="fill_rp" ng-model="selector.fill.rp">
+                <label class="form-check-label" for="fill_rp">Paladins</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="fill_ms" ng-model="selector.fill.ms">
+                <label class="form-check-label" for="fill_ms">Sorcerers</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row justify-content-center">
+            <input ng-click="selector.reset();" class="mt-3 mr-1 col-3 btn btn-outline-dark btn-lg" type="submit" value="Voltar">
+            <input ng-click="selector.check();selector.select();" class="mt-3 col-3 btn btn-outline-dark btn-lg" type="submit" value="Sortear Time!">
+          </div>
+        </form>
+
+        <div class="row" ng-if="selector.error">
+          <ul class="list-group col-12">
+            <li class="list-group-item list-group-item-danger"  ng-repeat="error in selector.errors">{{error}}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div ng-if="selector.step == 3 && !selector.error">
+        <div class="row">
+          <div class="col">
+            <h4>Time Selecionado:</h4>
+            <ul class="list-group">
+              <li class="list-group-item" ng-repeat="player in selector.team" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}">
+                <i ng-if="player.priority" class="fas fa-star"></i>
+                <i ng-if="!player.priority" class="far fa-star"></i>
+                <span> ({{player.voc}}) {{player.name}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col">
+            <h4>Players Não Selecionados:</h4>
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-primary" ng-repeat="player in selector.players" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}">
+                <i ng-if="player.priority" class="fas fa-star"></i>
+                <i ng-if="!player.priority" class="far fa-star"></i>
+                <span> ({{player.voc}}) {{player.name}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <a href="#" class="mt-3 col-3 btn btn-outline-dark btn-lg" ng-click="selector.reset();" role="button" aria-disabled="true">Novo Sorteio!</a>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
