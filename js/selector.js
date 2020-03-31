@@ -4,12 +4,19 @@ angular.module('selectorApp', [])
 
     selector.reset = function() {
       selector.step = 1;
-      selector.players = []
-      selector.team = []
+      selector.players = [];
+      selector.team = [];
       selector.log = ""; 
       selector.min = {ek: 2, ed: 4, rp: 3, ms: 1};
       selector.fill = {ek: false, ed: true, rp: true, ms: true};
       selector.team_size = 10;
+      selector.error = false;
+      selector.errors = [];
+    }
+
+    selector.reselect = function() {
+      selector.step = 2;
+      selector.team = [];
       selector.error = false;
       selector.errors = [];
     }
@@ -27,7 +34,8 @@ angular.module('selectorApp', [])
         if(regex.test(line)) {
           var result = regex.exec(line);
           var name = result[1];
-          name = name.replace(/(\[\d+\])/, "").trim();
+          name = name.trim();
+          // name = name.replace(/(\[\d+\])/, "").trim();
           var voc = result[2].toUpperCase();
           if(!players.some(function(el){ return el.name === name})){
             players.push({name: name, voc: voc, priority: false});
