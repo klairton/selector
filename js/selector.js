@@ -6,12 +6,16 @@ angular.module('selectorApp', [])
       selector.step = 1;
       selector.players = [];
       selector.team = [];
+      selector.teams = [];
       selector.log = ""; 
       selector.min = {ek: 2, ed: 4, rp: 3, ms: 1};
       selector.fill = {ek: false, ed: true, rp: true, ms: true};
       selector.team_size = 10;
       selector.error = false;
       selector.errors = [];
+      selector.swap = {x: {i: -1, j: -1}, y: {i: -1, j: -1}};
+      selector.click_one = false;
+      selector.click_two = false;
     }
 
     selector.reselect = function() {
@@ -19,6 +23,9 @@ angular.module('selectorApp', [])
       selector.team = [];
       selector.error = false;
       selector.errors = [];
+      selector.swap = {x: {i: -1, j: -1}, y: {i: -1, j: -1}};
+      selector.click_one = false;
+      selector.click_two = false;
     }
 
     selector.reset();
@@ -35,7 +42,6 @@ angular.module('selectorApp', [])
           var result = regex.exec(line);
           var name = result[1];
           name = name.trim();
-          // name = name.replace(/(\[\d+\])/, "").trim();
           var voc = result[2].toUpperCase();
           if(!players.some(function(el){ return el.name === name})){
             players.push({name: name, voc: voc, priority: false});
@@ -140,44 +146,51 @@ angular.module('selectorApp', [])
       return players;
     }
 
-    selector.selectPlayersByVoc = function(voc, min) {
-      var players = [];
-      var aux, i, j, player, names, index;
+    selector.removePlayerfromPool = function(name) {
+      names = selector.players.map(function(el) { return el.name; });
+      index = names.indexOf(name);
+      selector.players.splice(index, 1);
+    }
 
+    selector.selectPlayersByVoc = function(voc, min) {
+      var aux, i, player, names, index;
+      var players = [];
+
+      // Reserve the space by priority and vocation
       aux = selector.selectPriorityByVoc(voc);
       if(aux.length > min) {
-        i = 0;
-        while(i < min) {
-          j = randomInt(0, aux.length - 1);
-          player = aux[j];
+        while(players.length < min) {
+          i = randomInt(0, aux.length - 1);
+          player = aux[i];
           if(!players.some(function(el){ return el.name === player.name})){
             players.push({name: player.name, voc: player.voc, priority: player.priority});
-            i += 1;
+            selector.removePlayerfromPool(player.name);
+            names = aux.map(function(el) { return el.name; });
+            index = names.indexOf(player.name);
+            aux.splice(index, 1);
           }
         }
       } else {
-        for(i = 0; i < aux.length; i++) {
-          player = aux[i];
-          players.push({name: player.name, voc: player.voc, priority: player.priority});
-        }
+        players = aux;
       }
 
-      i = players.length;
+      // Reserve the space by vocation
       aux = selector.selectByVoc(voc);
-      while(i < min) {
-        j = randomInt(0, aux.length - 1);
-        player = aux[j];
+      while(players.length < min) {
+        i = randomInt(0, aux.length - 1);
+        player = aux[i];
         if(!players.some(function(el){ return el.name === player.name})){
           players.push({name: player.name, voc: player.voc, priority: player.priority});
-          i += 1;
+          selector.removePlayerfromPool(player.name);
+          names = aux.map(function(el) { return el.name; });
+          index = names.indexOf(player.name);
+          aux.splice(index, 1);
         }
       }
 
+      // Add the players in the team
       for (i = 0; i < players.length; i++) {
         player = players[i];
-        names = selector.players.map(function(el) { return el.name; });
-        index = names.indexOf(player.name);
-        selector.players.splice(index, 1);
         selector.team.push({name: player.name, voc: player.voc, priority: player.priority})
       }
     }
@@ -186,6 +199,7 @@ angular.module('selectorApp', [])
       var aux, i, player, names, index;
       var players = [];
 
+      // Create a pool considering the priority and vocations allowed to fill the team
       if(selector.fill.ek){
         aux = selector.selectPriorityByVoc('EK');
         for(i = 0; i < aux.length; i++) {
@@ -215,23 +229,15 @@ angular.module('selectorApp', [])
         }
       }
 
-      if(players.length > (selector.team_size - selector.team.length)) {
-        while(selector.team.length < selector.team_size) {
-          i = randomInt(0, players.length - 1);
-          player = players[i];
-          selector.team.push({name: player.name, voc: player.voc, priority: player.priority});
-          names = selector.players.map(function(el) { return el.name; });
-          index = names.indexOf(player.name);
-          selector.players.splice(index, 1);
-        }
-      } else {
-        for(i = 0; i < players.length; i++) {
-          player = players[i];
-          selector.team.push({name: player.name, voc: player.voc, priority: player.priority});
-          names = selector.players.map(function(el) { return el.name; });
-          index = names.indexOf(player.name);
-          selector.players.splice(index, 1);
-        }
+      // Select the players randomly the players from the pool
+      while(selector.team.length < selector.team_size && players.length > 0) {
+        i = randomInt(0, players.length - 1);
+        player = players[i];
+        selector.team.push({name: player.name, voc: player.voc, priority: player.priority});
+        selector.removePlayerfromPool(player.name);
+        names = players.map(function(el) { return el.name; });
+        index = names.indexOf(player.name);
+        players.splice(index, 1);
       }
     }
 
@@ -239,6 +245,7 @@ angular.module('selectorApp', [])
       var aux, i, player, names, index;
       var players = [];
 
+      // Create a pool considering the vocations allowed to fill the team
       if(selector.fill.ek){
         aux = selector.selectByVoc('EK');
         for(i = 0; i < aux.length; i++) {
@@ -268,23 +275,15 @@ angular.module('selectorApp', [])
         }
       }
 
-      if(players.length > (selector.team_size - selector.team.length)) {
-        while(selector.team.length < selector.team_size) {
-          i = randomInt(0, players.length - 1);
-          player = players[i];
-          selector.team.push({name: player.name, voc: player.voc, priority: player.priority});
-          names = selector.players.map(function(el) { return el.name; });
-          index = names.indexOf(player.name);
-          selector.players.splice(index, 1);
-        }
-      } else {
-        for(i = 0; i < players.length; i++) {
-          player = players[i];
-          selector.team.push({name: player.name, voc: player.voc, priority: player.priority});
-          names = selector.players.map(function(el) { return el.name; });
-          index = names.indexOf(player.name);
-          selector.players.splice(index, 1);
-        }
+      // Select the players randomly the players from the pool
+      while(selector.team.length < selector.team_size && players.length > 0) {
+        i = randomInt(0, players.length - 1);
+        player = players[i];
+        selector.team.push({name: player.name, voc: player.voc, priority: player.priority});
+        selector.removePlayerfromPool(player.name);
+        names = players.map(function(el) { return el.name; });
+        index = names.indexOf(player.name);
+        players.splice(index, 1);
       }
     }    
 
@@ -298,7 +297,50 @@ angular.module('selectorApp', [])
         selector.fillTeam();
         selector.team.sort(function(a, b) {return (a.voc < b.voc) ? -1 : 1;});
         selector.players.sort(function(a, b) {return (a.voc < b.voc) ? -1 : 1;});
+        selector.teams.push(selector.team);
+        selector.team = [];
       }
+    }
+
+    selector.clickPlayer = function(i, j) {
+      if(selector.click_one && selector.click_two) {
+        selector.swap.x = {i: -1, j: -1};
+        selector.swap.y = {i: -1, j: -1};
+        selector.click_one = false;
+        selector.click_two = false;
+      }
+      if(selector.click_one && !selector.click_two) {
+        selector.swap.y = {i: i, j: j};
+        selector.click_two = true;
+      }
+      if(!selector.click_one) {
+        selector.swap.x = {i: i, j: j};
+        selector.click_one = true;
+      }
+    }
+
+    selector.swapPlayers = function() {
+      if(selector.click_one && selector.click_two) {
+        temp = selector.teams[selector.swap.x.i][selector.swap.x.j];
+        selector.teams[selector.swap.x.i][selector.swap.x.j] = selector.teams[selector.swap.y.i][selector.swap.y.j];
+        selector.teams[selector.swap.y.i][selector.swap.y.j] = temp;
+        selector.swap.x = {i: -1, j: -1};
+        selector.swap.y = {i: -1, j: -1};
+        selector.click_one = false;
+        selector.click_two = false;
+      }
+    }
+
+    selector.countByVoc = function(voc) {
+      var players = 0
+
+      for (var i = 0; i < selector.players.length; i++) {
+        player = selector.players[i]
+        if(player.voc == voc) {
+          players += 1;
+        }
+      }
+      return players;
     }
 
     function randomInt(min, max) {

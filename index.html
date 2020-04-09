@@ -44,7 +44,8 @@
           <div class="col">
             <h4>Knights: {{selector.countByVoc('EK')}}</h4>
             <ul class="list-group">
-              <li class="list-group-item list-group-item-primary" ng-repeat="player in selector.selectByVoc('EK')">
+              <!-- <li class="list-group-item list-group-item-primary" ng-repeat="player in selector.selectByVoc('EK')"> -->
+              <li class="list-group-item" ng-repeat="player in selector.selectByVoc('EK')">
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -54,17 +55,21 @@
           <div class="col">
             <h4>Druids: {{selector.countByVoc('ED')}}</h4>
             <ul class="list-group">
-              <li class="list-group-item list-group-item-success"  ng-repeat="player in selector.selectByVoc('ED')">
+              <!-- <li class="list-group-item list-group-item-success"  ng-repeat="player in selector.selectByVoc('ED')"> -->
+              <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('ED')">
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
               </li>
             </ul>
           </div>
+        </div>
+        <div class="row">
           <div class="col">
             <h4>Paladins: {{selector.countByVoc('RP')}}</h4>
             <ul class="list-group">
-              <li class="list-group-item list-group-item-info"  ng-repeat="player in selector.selectByVoc('RP')">
+              <!-- <li class="list-group-item list-group-item-info"  ng-repeat="player in selector.selectByVoc('RP')"> -->
+              <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('RP')">
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -74,7 +79,8 @@
           <div class="col">
             <h4>Sorcerers: {{selector.countByVoc('MS')}}</h4>
             <ul class="list-group">
-              <li class="list-group-item list-group-item-warning"  ng-repeat="player in selector.selectByVoc('MS')">
+              <!-- <li class="list-group-item list-group-item-warning"  ng-repeat="player in selector.selectByVoc('MS')"> -->
+              <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('MS')">
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -141,20 +147,22 @@
 
       <div ng-if="selector.step == 3 && !selector.error">
         <div class="row">
-          <div class="col">
-            <h4>Time Selecionado:</h4>
+          <div class="col-6" ng-repeat="team in selector.teams">
+            <h4>Time #{{$index + 1}}:</h4>
             <ul class="list-group">
-              <li class="list-group-item" ng-repeat="player in selector.team" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}">
+              <!-- <li class="list-group-item" ng-repeat="player in team" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}"> -->
+              <li class="list-group-item" ng-repeat="player in team" ng-class="{'list-group-item-dark': (selector.swap.x.i == $parent.$index && selector.swap.x.j == $index) || (selector.swap.y.i == $parent.$index && selector.swap.y.j == $index)}" ng-click="selector.clickPlayer($parent.$index, $index)">
                 <i ng-if="player.priority" class="fas fa-star"></i>
                 <i ng-if="!player.priority" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
               </li>
             </ul>
           </div>
-          <div class="col">
+          <div class="col-6" ng-if="selector.players.length > 0">
             <h4>Players Não Selecionados:</h4>
             <ul class="list-group">
-              <li class="list-group-item list-group-item-primary" ng-repeat="player in selector.players" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}">
+              <!-- <li class="list-group-item" ng-repeat="player in selector.players" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}"> -->
+              <li class="list-group-item" ng-repeat="player in selector.players">
                 <i ng-if="player.priority" class="fas fa-star"></i>
                 <i ng-if="!player.priority" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -164,7 +172,8 @@
         </div>
         <div class="row justify-content-center">
           <a href="#" class="mt-3 mr-1 col-3 btn btn-outline-dark btn-lg" ng-click="selector.reset();" role="button" aria-disabled="true">Novo Sorteio!</a>
-          <a href="#" class="mt-3 col-3 btn btn-outline-dark btn-lg" ng-click="selector.reselect();" role="button" aria-disabled="true">Sorteio com Players Não Selecionados!</a>
+          <a href="#" class="mt-3 mr-1 col-3 btn btn-outline-dark btn-lg" ng-click="selector.swapPlayers();" role="button" aria-disabled="true" ng-class="{'disabled': !selector.click_one || !selector.click_two }">Trocar Players Selecionados!</a>
+          <a href="#" class="mt-3 col-3 btn btn-outline-dark btn-lg" ng-click="selector.reselect();" role="button" aria-disabled="true" ng-class="{'disabled': selector.players.length == 0}">Sorteio com Players Não Selecionados!</a>
         </div>
       </div>
     </div>
