@@ -40,12 +40,12 @@
           <h4 class="col-12">Total de Participantes: {{selector.players.length}}</h4>
         </div>
 
-        <div class="row">
+        <div class="row mt-3">
           <div class="col">
             <h4>Knights: {{selector.countByVoc('EK')}}</h4>
             <ul class="list-group">
-              <!-- <li class="list-group-item list-group-item-primary" ng-repeat="player in selector.selectByVoc('EK')"> -->
-              <li class="list-group-item" ng-repeat="player in selector.selectByVoc('EK')">
+              <li class="list-group-item list-group-item-primary" ng-repeat="player in selector.selectByVoc('EK')">
+              <!-- <li class="list-group-item" ng-repeat="player in selector.selectByVoc('EK')"> -->
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -55,8 +55,8 @@
           <div class="col">
             <h4>Druids: {{selector.countByVoc('ED')}}</h4>
             <ul class="list-group">
-              <!-- <li class="list-group-item list-group-item-success"  ng-repeat="player in selector.selectByVoc('ED')"> -->
-              <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('ED')">
+              <li class="list-group-item list-group-item-success"  ng-repeat="player in selector.selectByVoc('ED')">
+              <!-- <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('ED')"> -->
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -64,12 +64,12 @@
             </ul>
           </div>
         </div>
-        <div class="row">
+        <div class="row mt-3">
           <div class="col">
             <h4>Paladins: {{selector.countByVoc('RP')}}</h4>
             <ul class="list-group">
-              <!-- <li class="list-group-item list-group-item-info"  ng-repeat="player in selector.selectByVoc('RP')"> -->
-              <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('RP')">
+              <li class="list-group-item list-group-item-info"  ng-repeat="player in selector.selectByVoc('RP')">
+              <!-- <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('RP')"> -->
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -79,8 +79,8 @@
           <div class="col">
             <h4>Sorcerers: {{selector.countByVoc('MS')}}</h4>
             <ul class="list-group">
-              <!-- <li class="list-group-item list-group-item-warning"  ng-repeat="player in selector.selectByVoc('MS')"> -->
-              <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('MS')">
+              <li class="list-group-item list-group-item-warning"  ng-repeat="player in selector.selectByVoc('MS')">
+              <!-- <li class="list-group-item"  ng-repeat="player in selector.selectByVoc('MS')"> -->
                 <i ng-if="player.priority" ng-click="player.priority = false;" class="fas fa-star"></i>
                 <i ng-if="!player.priority" ng-click="player.priority = true;" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -151,7 +151,7 @@
             <h4>Time #{{$index + 1}}:</h4>
             <ul class="list-group">
               <!-- <li class="list-group-item" ng-repeat="player in team" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}"> -->
-              <li class="list-group-item" ng-repeat="player in team" ng-class="{'list-group-item-dark': (selector.swap.x.i == $parent.$index && selector.swap.x.j == $index) || (selector.swap.y.i == $parent.$index && selector.swap.y.j == $index)}" ng-click="selector.clickPlayer($parent.$index, $index)">
+              <li class="list-group-item" ng-repeat="player in team" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS', 'list-group-item-dark': (selector.swap.x.i == $parent.$index && selector.swap.x.j == $index) || (selector.swap.y.i == $parent.$index && selector.swap.y.j == $index)}" ng-click="selector.clickPlayer($parent.$index, $index)">
                 <i ng-if="player.priority" class="fas fa-star"></i>
                 <i ng-if="!player.priority" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
@@ -161,8 +161,8 @@
           <div class="col-6" ng-if="selector.players.length > 0">
             <h4>Players Não Selecionados:</h4>
             <ul class="list-group">
-              <!-- <li class="list-group-item" ng-repeat="player in selector.players" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}"> -->
-              <li class="list-group-item" ng-repeat="player in selector.players">
+              <li class="list-group-item" ng-repeat="player in selector.players" ng-class="{'list-group-item-primary': player.voc == 'EK', 'list-group-item-success': player.voc == 'ED', 'list-group-item-info': player.voc == 'RP', 'list-group-item-warning': player.voc == 'MS'}">
+              <!-- <li class="list-group-item" ng-repeat="player in selector.players"> -->
                 <i ng-if="player.priority" class="fas fa-star"></i>
                 <i ng-if="!player.priority" class="far fa-star"></i>
                 <span> ({{player.voc}}) {{player.name}}</span>
