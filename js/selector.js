@@ -171,7 +171,15 @@ angular.module('selectorApp', [])
           }
         }
       } else {
-        players = aux;
+        // Add the players in the team
+        while (aux.length > 0) {
+          player = aux[0];
+          players.push({name: player.name, voc: player.voc, priority: player.priority});
+          selector.removePlayerfromPool(player.name);
+          names = aux.map(function(el) { return el.name; });
+          index = names.indexOf(player.name);
+          aux.splice(index, 1);
+        }
       }
 
       // Reserve the space by vocation
